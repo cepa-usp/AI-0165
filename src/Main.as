@@ -4,10 +4,7 @@ package
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.debug.Debug;
-	import cepa.ai.AI;
-	import cepa.ai.AIObserver;
-	import cepa.eval.ProgressiveEvaluator;
-	import cepa.eval.StatsScreen;
+	import BaseAssets.BaseMain;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -20,7 +17,7 @@ package
 	 * ...
 	 * @author Alexandre
 	 */
-	public class Main extends Sprite implements AIObserver
+	public class Main extends BaseMain
 	{
 		private const rect:Rectangle = new Rectangle(0, 0, 700, 500);
 		private const barHeight:int = 50;
@@ -31,47 +28,27 @@ package
 		private var fixedGeom:FixedGeometry;
 		private var selectableGeom:SelectableGeometry;
 		
-		private var ai:AI;
 		//private var statsScreen:StatsScreen;
-		private var layerAtividade:Sprite;
+		//private var layerAtividade:Sprite;
 		private var selectedGeom:MovieClip;
 		private var selectedFilter:GlowFilter = new GlowFilter(0x800000, 1, 10, 10);
 		
-		public function Main():void 
+		override protected function init():void 
 		{
-			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
-		}
-		
-		private function init(e:Event = null):void 
-		{
-			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
 			
-			layerAtividade = new Sprite();
-			layerAtividade.name = "at";
-			addChild(layerAtividade);
+			//layerAtividade = new Sprite();
+			//layerAtividade.name = "at";
+			//addChild(layerAtividade);
 			
-			setupFramework();
+			//setupFramework();
 			setup3d();
 			loadGeometry();
 			criaBarraModelos();
-			onResetClick();
+			reset();
 			
-			stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
-			ai.initialize();
-			setChildIndex(layerAtividade, 0);
-		}
-		
-		private function setupFramework():void 
-		{
-			ai = new AI(this);
-			
-			ai.container.messageLabel.visible = false;
-			ai.addObserver(this);
-			ai.evaluator = new ProgressiveEvaluator(ai);
-			
-			//statsScreen = new StatsScreen(ProgressiveEvaluator(ai.evaluator), ai);
+			stage.addEventListener(Event.ENTER_FRAME, enterFrame);
+			//setChildIndex(layerAtividade, 0);
 		}
 		
 		private function loadGeometry():void 
@@ -83,7 +60,7 @@ package
 			view3d.scene.addChild(selectableGeom);
 		}
 		
-		private function onEnterFrame(e:Event):void 
+		private function enterFrame(e:Event):void 
 		{
 			view3d.render();
 		}
@@ -147,8 +124,9 @@ package
 		{
 			var dif:Point = new Point(stage.mouseX - posDown.x, stage.mouseY - posDown.y);
 			
-			var newX:Number = Math.min(Math.max(selectableGeom.getRotationX() - dif.y/10, -30), 30);
-			var newY:Number = selectableGeom.getRotationY() - dif.x/2;
+			var newX:Number = Math.min(Math.max(selectableGeom.getRotationX() - dif.y/5, -30), 30);
+			//var newY:Number = selectableGeom.getRotationY() - dif.x/2;
+			var newY:Number = Math.min(Math.max(selectableGeom.getRotationY() - dif.x/2, -90), 90);
 			
 			selectableGeom.setRotationX(newX);
 			fixedGeom.setRotationX(newX);
@@ -168,7 +146,7 @@ package
 		
 		/* INTERFACE cepa.ai.AIObserver */
 		
-		public function onResetClick():void 
+		override public function reset(e:MouseEvent = null):void 
 		{
 			fixedGeom.randomizeGeom();
 			selectableGeom.reset();
