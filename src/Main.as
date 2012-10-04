@@ -4,14 +4,21 @@ package
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.debug.Debug;
+	import away3d.lights.PointLight;
 	import BaseAssets.BaseMain;
+	import BaseAssets.events.BaseEvent;
+	import BaseAssets.tutorial.CaixaTexto;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.external.ExternalInterface;
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.utils.Timer;
+	import pipwerks.SCORM;
 	
 	/**
 	 * ...
@@ -32,6 +39,11 @@ package
 		//private var layerAtividade:Sprite;
 		private var selectedGeom:MovieClip;
 		private var selectedFilter:GlowFilter = new GlowFilter(0x800000, 1, 10, 10);
+		private var currentAnswer:String = "";
+		
+		private var botaoTerminei:BotaoTerminei;
+		private var stats:Object;
+		private var valendoNota:Boolean = false;
 		
 		override protected function init():void 
 		{
@@ -46,9 +58,60 @@ package
 			loadGeometry();
 			criaBarraModelos();
 			reset();
+			criaStatisticas();
 			
 			stage.addEventListener(Event.ENTER_FRAME, enterFrame);
 			//setChildIndex(layerAtividade, 0);
+			
+			if (ExternalInterface.available) {
+				initLMSConnection();
+				if (mementoSerialized != null) {
+					if(mementoSerialized != "" && mementoSerialized != "null") recoverStatus(mementoSerialized);
+				}
+			}
+			
+			
+			if (connected) {
+				if (scorm.get("cmi.entry") == "ab-initio") iniciaTutorial();
+			}else {
+				if (score == 0) iniciaTutorial();
+			}
+		}
+		
+		private function criaStatisticas():void 
+		{
+			stats = { };
+			stats.nTotal = 0;
+			stats.nValendo = 0;
+			stats.nNaoValendo = 0;
+			stats.scoreMin = 60;
+			stats.scoreTotal = 0;
+			stats.scoreValendo = 0;
+			stats.valendo = valendoNota;
+		}
+		
+		private function saveStatusForRecovery():void 
+		{
+			var status:Object = { };
+			status.completed = completed;
+			status.score = score;
+			status.location = scormExercise;
+			status.stats = stats;
+			
+			mementoSerialized = JSON.stringify(status);
+		}
+		
+		private function recoverStatus(mementoSerialized:String):void 
+		{
+			var status = JSON.parse(mementoSerialized);
+			stats = status.stats;
+			statsScreen.updateStatics(stats);
+			
+			if (!connected) {
+				completed = status.completed;
+				score = status.score;
+				scormExercise = status.location;
+			}
 		}
 		
 		private function loadGeometry():void 
@@ -77,6 +140,69 @@ package
 			addFunctionsToButtons(barraModelos.mEsfera);
 			addFunctionsToButtons(barraModelos.mPlanoEsferico);
 			addFunctionsToButtons(barraModelos.mToroide);
+			
+			botaoTerminei = new BotaoTerminei();
+			barraModelos.addChild(botaoTerminei);
+			botaoTerminei.x = 560;
+			botaoTerminei.y = botaoTerminei.height / 2 + 10;
+			botaoTerminei.addEventListener(MouseEvent.CLICK, avalia);
+		}
+		
+		private function lockBarraModelos():void 
+		{
+			lock(barraModelos.mCilindro);
+			lock(barraModelos.mConcha);
+			lock(barraModelos.mCubo);
+			lock(barraModelos.mEsfera);
+			lock(barraModelos.mPlanoEsferico);
+			lock(barraModelos.mToroide);
+		}
+		
+		private function unlockBarraModelos():void 
+		{
+			unlock(barraModelos.mCilindro);
+			unlock(barraModelos.mConcha);
+			unlock(barraModelos.mCubo);
+			unlock(barraModelos.mEsfera);
+			unlock(barraModelos.mPlanoEsferico);
+			unlock(barraModelos.mToroide);
+		}
+		
+		private function avalia(e:MouseEvent):void 
+		{
+			if (currentAnswer == "") {
+				feedbackScreen.okCancelMode = false;
+				feedbackScreen.setText("Você precisa selecionar alguma forma para ser avaliado.");
+			}else{
+				lock(botaoTerminei);
+				lockBarraModelos();
+				var scoreAux:Number = 0;
+				var textoFeedback:String = "";
+				if (fixedGeom.getAnswer(currentAnswer)) {
+					scoreAux = 100;
+					textoFeedback += "Parabéns, você acertou!";
+				}else {
+					textoFeedback += "Essa não é a melhor forma para medir a Lei de Gauss.";
+				}
+				//score = ((score * scormExercise) + scoreAux) / (scormExercise + 1);
+				
+				if (stats.valendo) {
+					stats.scoreValendo = Math.round(((stats.scoreValendo * stats.nValendo) + scoreAux)/(stats.nValendo + 1));
+					stats.nValendo++;
+					score = stats.scoreValendo;
+				}
+				else {
+					stats.nNaoValendo++;
+				}
+				stats.scoreTotal = Math.round(((stats.scoreTotal * stats.nTotal) + scoreAux) / (stats.nTotal + 1));
+				stats.nTotal++;
+				
+				statsScreen.updateStatics(stats);
+				
+				textoFeedback += "\nPressione o botão reset para iniciar uma nova tentativa.";
+				feedbackScreen.okCancelMode = false;
+				feedbackScreen.setText(textoFeedback);
+			}
 		}
 		
 		private function addFunctionsToButtons(btn:MovieClip):void
@@ -91,6 +217,7 @@ package
 				selectedGeom.filters = [];
 			}
 			selectableGeom.loadGeometry(e.target.name);
+			currentAnswer = e.target.name;
 			selectedGeom = MovieClip(e.target);
 			selectedGeom.filters = [selectedFilter];
 			//fixedGeom.randomizeGeom();
@@ -104,6 +231,13 @@ package
 			view3d.width = rect.width;
 			view3d.height = rect.height - barHeight - 5;
 			layerAtividade.addChild(view3d);
+			
+			//var pointLight:PointLight = new PointLight();
+			//pointLight.x = 0;
+			//pointLight.y = 1000;
+			//pointLight.z = -500;
+			//pointLight.color = 0xFFFF00;
+			//view3d.scene.addChild(pointLight);
 			
 			view3d.addEventListener(MouseEvent.MOUSE_DOWN, down3d);
 			
@@ -154,36 +288,238 @@ package
 				selectedGeom.filters = [];
 				selectedGeom = null;
 			}
+			unlock(botaoTerminei);
+			unlockBarraModelos();
+			currentAnswer = "";
 		}
 		
-		public function onScormFetch():void 
+		//---------------- Tutorial -----------------------
+		
+		private var balao:CaixaTexto;
+		private var pointsTuto:Array;
+		private var tutoBaloonPos:Array;
+		private var tutoPos:int;
+		private var tutoSequence:Array;
+		
+		override public function iniciaTutorial(e:MouseEvent = null):void  
 		{
+			blockAI();
 			
+			tutoPos = 0;
+			if(balao == null){
+				balao = new CaixaTexto();
+				layerTuto.addChild(balao);
+				balao.visible = false;
+				
+				tutoSequence = ["Veja aqui as orientações.",
+								"Clique e arraste sobre uma molécula para criá-la.",
+								"Utilize esses controles para modificar (rotacionar e inverter) as peças.",
+								"Posicione as moléculas para montar um segmento de DNA.",
+								"Ao movimentar as moléculas serão formadas as ligações (covalente ou ponte de hidrogênio)...",
+								"...de acordo com a proximidade entre os elementos que formam a ligação.",
+								"Para apagar uma molécula basta arrastá-la para a barra inferior ou pressionar \"delete\" quando ela estiver selecionada.",
+								"Clique sobre uma ligação para classificá-la (ligação covalente ou ponte de hidrogênio).",
+								"Pressione \"terminei\" para avaliar sua resposta."];
+				
+				pointsTuto = 	[new Point(650, 405),
+								new Point(240 , 500),
+								new Point(460 , 500),
+								new Point(180 , 180),
+								new Point(200 , 200),
+								new Point(220 , 220),
+								new Point(240 , 240),
+								new Point(180 , 260),
+								new Point(220 , 260)];
+								
+				tutoBaloonPos = [[CaixaTexto.RIGHT, CaixaTexto.FIRST],
+								[CaixaTexto.BOTTON, CaixaTexto.FIRST],
+								[CaixaTexto.BOTTON, CaixaTexto.LAST],
+								["", ""],
+								["", ""],
+								["", ""],
+								["", ""],
+								["", ""],
+								[CaixaTexto.BOTTON, CaixaTexto.FIRST]];
+			}
+			balao.removeEventListener(BaseEvent.NEXT_BALAO, closeBalao);
+			
+			balao.setText(tutoSequence[tutoPos], tutoBaloonPos[tutoPos][0], tutoBaloonPos[tutoPos][1]);
+			balao.setPosition(pointsTuto[tutoPos].x, pointsTuto[tutoPos].y);
+			balao.addEventListener(BaseEvent.NEXT_BALAO, closeBalao);
+			balao.addEventListener(BaseEvent.CLOSE_BALAO, iniciaAi);
 		}
 		
-		public function onScormSave():void 
+		private function closeBalao(e:Event):void 
 		{
-			
+			tutoPos++;
+			if (tutoPos >= tutoSequence.length) {
+				balao.removeEventListener(BaseEvent.NEXT_BALAO, closeBalao);
+				balao.visible = false;
+				iniciaAi(null);
+			}else {
+				balao.setText(tutoSequence[tutoPos], tutoBaloonPos[tutoPos][0], tutoBaloonPos[tutoPos][1]);
+				balao.setPosition(pointsTuto[tutoPos].x, pointsTuto[tutoPos].y);
+			}
 		}
 		
-		public function onStatsClick():void 
+		private function iniciaAi(e:BaseEvent):void 
 		{
-			
+			balao.removeEventListener(BaseEvent.CLOSE_BALAO, iniciaAi);
+			balao.removeEventListener(BaseEvent.NEXT_BALAO, closeBalao);
+			unblockAI();
 		}
 		
-		public function onTutorialClick():void 
+		
+		/*------------------------------------------------------------------------------------------------*/
+		//SCORM:
+		
+		private const PING_INTERVAL:Number = 5 * 60 * 1000; // 5 minutos
+		private var completed:Boolean;
+		private var scorm:SCORM;
+		private var scormExercise:int = 0;
+		private var connected:Boolean;
+		private var score:int = 0;
+		private var pingTimer:Timer;
+		private var mementoSerialized:String = "";
+		
+		/**
+		 * @private
+		 * Inicia a conexão com o LMS.
+		 */
+		private function initLMSConnection () : void
 		{
+			completed = false;
+			connected = false;
+			scorm = new SCORM();
 			
+			pingTimer = new Timer(PING_INTERVAL);
+			pingTimer.addEventListener(TimerEvent.TIMER, pingLMS);
+			
+			connected = scorm.connect();
+			
+			if (connected) {
+				
+				if (scorm.get("cmi.mode" != "normal")) return;
+				
+				scorm.set("cmi.exit", "suspend");
+				// Verifica se a AI já foi concluída.
+				var status:String = scorm.get("cmi.completion_status");	
+				mementoSerialized = scorm.get("cmi.suspend_data");
+				var stringScore:String = scorm.get("cmi.score.raw");
+				
+				switch(status)
+				{
+					// Primeiro acesso à AI
+					case "not attempted":
+					case "unknown":
+					default:
+						completed = false;
+						break;
+					
+					// Continuando a AI...
+					case "incomplete":
+						completed = false;
+						break;
+					
+					// A AI já foi completada.
+					case "completed":
+						completed = true;
+						//setMessage("ATENÇÃO: esta Atividade Interativa já foi completada. Você pode refazê-la quantas vezes quiser, mas não valerá nota.");
+						break;
+				}
+				
+				//unmarshalObjects(mementoSerialized);
+				
+				scormExercise = int(scorm.get("cmi.location"));
+				score = Number(stringScore.replace(",", "."));
+				
+				var success:Boolean = scorm.set("cmi.score.min", "0");
+				if (success) success = scorm.set("cmi.score.max", "100");
+				
+				if (success)
+				{
+					scorm.save();
+					pingTimer.start();
+				}
+				else
+				{
+					//trace("Falha ao enviar dados para o LMS.");
+					connected = false;
+				}
+			}
+			else
+			{
+				trace("Esta Atividade Interativa não está conectada a um LMS: seu aproveitamento nela NÃO será salvo.");
+				mementoSerialized = ExternalInterface.call("getLocalStorageString");
+			}
+			
+			//reset();
 		}
 		
-		public function onScormConnected():void 
+		/**
+		 * @private
+		 * Salva cmi.score.raw, cmi.location e cmi.completion_status no LMS
+		 */ 
+		private function commit()
 		{
-			
+			if (connected)
+			{
+				if (scorm.get("cmi.mode" != "normal")) return;
+				
+				// Salva no LMS a nota do aluno.
+				var success:Boolean = scorm.set("cmi.score.raw", score.toString());
+
+				// Notifica o LMS que esta atividade foi concluída.
+				success = scorm.set("cmi.completion_status", (completed ? "completed" : "incomplete"));
+
+				// Salva no LMS o exercício que deve ser exibido quando a AI for acessada novamente.
+				success = scorm.set("cmi.location", scormExercise.toString());
+				
+				// Salva no LMS a string que representa a situação atual da AI para ser recuperada posteriormente.
+				//mementoSerialized = marshalObjects();
+				success = scorm.set("cmi.suspend_data", mementoSerialized.toString());
+				
+				if (score > 99) success = scorm.set("cmi.success_status", "passed");
+				else success = scorm.set("cmi.success_status", "failed");
+
+				if (success)
+				{
+					scorm.save();
+				}
+				else
+				{
+					pingTimer.stop();
+					//setMessage("Falha na conexão com o LMS.");
+					connected = false;
+				}
+			}else { //LocalStorage
+				ExternalInterface.call("save2LS", mementoSerialized);
+			}
 		}
 		
-		public function onScormConnectionError():void 
+		/**
+		 * @private
+		 * Mantém a conexão com LMS ativa, atualizando a variável cmi.session_time
+		 */
+		private function pingLMS (event:TimerEvent)
 		{
-			
+			//scorm.get("cmi.completion_status");
+			commit();
+		}
+		
+		private function saveStatus(e:Event = null):void
+		{
+			if (ExternalInterface.available) {
+				saveStatusForRecovery();
+				if (connected) {
+					
+					if (scorm.get("cmi.mode" != "normal")) return;
+					scorm.set("cmi.suspend_data", mementoSerialized);
+					commit();
+				}else {//LocalStorage
+					ExternalInterface.call("save2LS", mementoSerialized);
+				}
+			}
 		}
 		
 	}

@@ -50,13 +50,13 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <element path="lib\away3d-core-fp11_4_0_7_gold.swc" />
     <element path="..\cepa-framework\includes\as3corelib.swc" />
     <element path="..\cepa-framework\includes\menuMoldura.swc" />
     <element path="..\cepa-framework\includes\ui.swc" />
     <element path="lib\arte.swc" />
     <element path="lib\as3corelib.swc" />
     <element path="lib\Botoes.swc" />
+    <element path="lib\away3d-core-fp11_4_0_9_gold.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

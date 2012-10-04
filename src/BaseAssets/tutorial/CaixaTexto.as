@@ -207,7 +207,7 @@ package BaseAssets.tutorial
 					}
 					break;
 				case RIGHT:
-					this.x = x - distanceToObject - (2 * marginText) - heightArrow - texto.textWidth;
+					this.x = x - distanceToObject - (2 * marginText) - heightArrow - texto.width;
 					if (alignForArrow == FIRST) {
 						this.y = y - marginText - widthArrow / 2;
 					}else if (alignForArrow == CENTER) {

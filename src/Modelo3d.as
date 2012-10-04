@@ -89,6 +89,11 @@ package
 				_object3d = null;
 			}
 		}
+		
+		public function set setScale(value:Number):void
+		{
+			container.scaleX = container.scaleY = container.scaleZ = value;
+		}
 	}
 
 }

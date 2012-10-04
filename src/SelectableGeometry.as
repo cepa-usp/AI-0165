@@ -44,37 +44,46 @@ package
 				mesh = null;
 			}*/
 			
-			material = new ColorMaterial(color, alpha);
 			//var mat:Matrix3D = new Matrix3D();
 			var geom:Geometry;
 			
 			switch(geomName) {
 				case "mEsfera":
-					//geom = new SphereGeometry(larguraMax / 2);
 					modelo.loadModel("resources/3dmodels/esfera.3DS");
+					modelo.setScale = 0.2;
+					//geom = new SphereGeometry(larguraMax / 2);
 					break;
 				case "mPlanoEsferico":
+					//modelo.loadModel("resources/3dmodels/esfera.3DS");
+					//modelo.setScale = 0.2;
 					geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, 2);
 					break;
 				case "mConcha":
+					//modelo.loadModel("resources/3dmodels/esfera.3DS");
+					//modelo.setScale = 0.2;
 					geom = new CapsuleGeometry(larguraMax / 2, alturaMax);
 					break;
 				case "mToroide":
-					geom = new TorusGeometry(larguraMax / 2, 10, 40, 12);
-					//modelo.loadModel("resources/3dmodels/torus.3DS");
+					modelo.loadModel("resources/3dmodels/torus.3DS");
+					modelo.setScale = 0.2;
+					//geom = new TorusGeometry(larguraMax / 2, 10, 40, 12);
 					break;
 				case "mCilindro":
-					geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, alturaMax);
-					//modelo.loadModel("resources/3dmodels/circulo.3DS");
-					//modelo.object.scale(3);
+					modelo.loadModel("resources/3dmodels/cilindro.3DS");
+					modelo.setScale = 0.2;
+					//geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, alturaMax);
 					break;
 				case "mCubo":
-					geom = new CubeGeometry(larguraMax, alturaMax, alturaMax);
+					modelo.loadModel("resources/3dmodels/box.3DS");
+					modelo.setScale = 0.2;
+					//geom = new CubeGeometry(larguraMax, alturaMax, alturaMax);
 					break;
-				
 			}
-			if(geom != null){
+			
+			if (geom != null) {
+				material = new ColorMaterial(color, alpha);
 				mesh = new Mesh(geom, material);
+				modelo.object.scaleX = modelo.object.scaleY = modelo.object.scaleZ = 1;
 				modelo.object3d = mesh;
 				//modelo.object.scale(1);
 			}

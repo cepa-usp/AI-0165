@@ -11,6 +11,7 @@ package
 	import away3d.primitives.TorusGeometry;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import flash.utils.Dictionary;
 	/**
 	 * ...
 	 * @author Alexandre
@@ -21,70 +22,112 @@ package
 		private var mesh:Mesh;
 		private var material:ColorMaterial;
 		private var geom:Geometry;
+		private var modelo:Modelo3d;
 		
 		private var geoms:Array = ["retaHorizontal", "retaVertical", "plano", "ponto", "espira", "esfera"];
-		private var currentGeaom:String = "";
+		private var currentGeom:String = "";
 		
 		private var larguraMax:Number = 600;
 		private var alturaMax:Number = 600;
+		private var answer:Dictionary;
 		
 		public function FixedGeometry() 
 		{
 			container = new ObjectContainer3D();
+			modelo = new Modelo3d();
+			container.addChild(modelo.object);
+			
 			addChild(container);
+			
+			createAnswer();
 			//container.rotationX = -45;
+		}
+		
+		private function createAnswer():void 
+		{
+			answer = new Dictionary();
+			
+			answer["mEsfera"] = ["ponto", "esfera"];
+			answer["mPlanoEsferico"] = [];//sempre errado
+			answer["mConcha"] = [];//sempre errado
+			answer["mToroide"] = ["espira"];
+			answer["mCilindro"] = ["retaVertical", "plano"];
+			answer["mCubo"] = ["plano"];
+		}
+		
+		public function getAnswer(resposta:String):Boolean
+		{
+			if (answer[resposta].indexOf(currentGeom) >= 0) return true;
+			else return false;
 		}
 		
 		public function loadGeometry(geomName:String, color:uint = 0x000000, alpha:Number = 1):void
 		{
+			/*
 			if (mesh != null) {
 				container.removeChild(mesh);
 				mesh = null;
-			}
-			material = new ColorMaterial(color, alpha);
-			var mat:Matrix3D = new Matrix3D();
+			}*/
+			
+			//var mat:Matrix3D = new Matrix3D();
+			var geom:Geometry;
 			
 			switch(geomName) {
 				case "retaHorizontal":
-					geom = new CylinderGeometry(2, 2, 2 * larguraMax);
-					mat.appendRotation(90, new Vector3D(0, 0, 1));
+					modelo.loadModel("resources/3dmodels/cilindroestatico.3DS");
+					modelo.setScale = 0.2;
+					//geom = new CylinderGeometry(2, 2, 2 * larguraMax);
+					//mat.appendRotation(90, new Vector3D(0, 0, 1));
 					break;
 				case "retaVertical":
 					geom = new CylinderGeometry(2, 2, 2 * alturaMax);
 					break;
 				case "plano":
-					geom = new PlaneGeometry(larguraMax, alturaMax, 1, 1, true, true);
+					modelo.loadModel("resources/3dmodels/boxestatico.3DS");
+					modelo.setScale = 0.2;
+					//geom = new PlaneGeometry(larguraMax, alturaMax, 1, 1, true, true);
 					break;
 				case "ponto":
 					geom = new SphereGeometry(larguraMax / 100);
 					break;
 				case "espira":
-					geom = new TorusGeometry(larguraMax / 2, 4, 40, 12);
+					modelo.loadModel("resources/3dmodels/torusestatico.3DS");
+					modelo.setScale = 0.2;
+					//geom = new TorusGeometry(larguraMax / 2, 4, 40, 12);
 					break;
 				case "esfera":
-					geom = new SphereGeometry(larguraMax / 10);
+					modelo.loadModel("resources/3dmodels/esferamenorestatica.3DS");
+					modelo.setScale = 0.2;
+					//geom = new SphereGeometry(larguraMax / 10);
 					break;
 			}
-			mesh = new Mesh(geom, material);
-			mesh.transform = mat;
-			container.addChild(mesh);
+			
+			if (geom != null) {
+				material = new ColorMaterial(color, alpha);
+				mesh = new Mesh(geom, material);
+				modelo.object.scaleX = modelo.object.scaleY = modelo.object.scaleZ = 1;
+				modelo.object3d = mesh;
+				//modelo.object.scale(1);
+			}
+			//mesh.transform = mat;
+			//container.addChild(mesh);
 		}
 		
 		public function randomizeGeom():void
 		{
 			var auxGeom:String;
-			if (currentGeaom != "") {
-				auxGeom = currentGeaom;
-				currentGeaom = geoms.splice(Math.floor(Math.random() * geoms.length), 1);
+			if (currentGeom != "") {
+				auxGeom = currentGeom;
+				currentGeom = geoms.splice(Math.floor(Math.random() * geoms.length), 1);
 				geoms.push(auxGeom);
 			}else {
-				currentGeaom = geoms.splice(Math.floor(Math.random() * geoms.length), 1);
+				currentGeom = geoms.splice(Math.floor(Math.random() * geoms.length), 1);
 			}
 			container.rotationX = 0;
 			container.rotationY = 0;
 			container.rotationZ = 0;
-			loadGeometry(currentGeaom);
-			//loadGeometry("retaVertical");
+			loadGeometry(currentGeom);
+			//loadGeometry("ponto");
 		}
 		
 		public function setRotationX(value:Number):void

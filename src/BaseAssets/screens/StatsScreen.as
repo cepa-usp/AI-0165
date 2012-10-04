@@ -76,7 +76,7 @@ package BaseAssets.screens
 			
 			glassPane.x = this.x;
 			glassPane.y = this.y;
-			glassPane.scaleX = glassPane.scaleY = 0;
+			//glassPane.scaleX = glassPane.scaleY = 0;
 			this.visible = true;
 			glassPane.visible = true;
 			Actuate.tween(glassPane, 0.4, { /*scaleX:1, scaleY:1*/alpha:1 } );
