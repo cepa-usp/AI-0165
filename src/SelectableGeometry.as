@@ -49,7 +49,7 @@ package
 			
 			switch(geomName) {
 				case "mEsfera":
-					modelo.loadModel("resources/3dmodels/esfera.3DS");
+					modelo.loadModel("./resources/3dmodels/esfera.3DS");
 					modelo.setScale = 0.2;
 					//geom = new SphereGeometry(larguraMax / 2);
 					break;
@@ -64,17 +64,17 @@ package
 					geom = new CapsuleGeometry(larguraMax / 2, alturaMax);
 					break;
 				case "mToroide":
-					modelo.loadModel("resources/3dmodels/torus.3DS");
+					modelo.loadModel("./resources/3dmodels/torus.3DS");
 					modelo.setScale = 0.2;
 					//geom = new TorusGeometry(larguraMax / 2, 10, 40, 12);
 					break;
 				case "mCilindro":
-					modelo.loadModel("resources/3dmodels/cilindro.3DS");
+					modelo.loadModel("./resources/3dmodels/cilindro.3DS");
 					modelo.setScale = 0.2;
 					//geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, alturaMax);
 					break;
 				case "mCubo":
-					modelo.loadModel("resources/3dmodels/box.3DS");
+					modelo.loadModel("./resources/3dmodels/box.3DS");
 					modelo.setScale = 0.2;
 					//geom = new CubeGeometry(larguraMax, alturaMax, alturaMax);
 					break;
@@ -87,6 +87,8 @@ package
 				modelo.object3d = mesh;
 				//modelo.object.scale(1);
 			}
+			Mesh(modelo._object3d).material.alphaPremultiplied = false;
+			//Mesh(modelo._object3d).material.lightPicker
 			//mesh.transform = mat;
 			//container.addChild(mesh);
 		}

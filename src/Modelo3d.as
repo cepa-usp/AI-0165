@@ -17,7 +17,7 @@ package
 	{
 		private var loader3d:Loader3D;
 		private var _loadComplete:Boolean = false;
-		private var _object3d:ObjectContainer3D;
+		public var _object3d:ObjectContainer3D;
 		public var container:ObjectContainer3D;
 		
 		public function Modelo3d(source:String = "") 

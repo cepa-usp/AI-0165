@@ -4,6 +4,7 @@ package
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.debug.Debug;
+	import away3d.lights.DirectionalLight;
 	import away3d.lights.PointLight;
 	import BaseAssets.BaseMain;
 	import BaseAssets.events.BaseEvent;
@@ -202,6 +203,8 @@ package
 				textoFeedback += "\nPressione o botão reset para iniciar uma nova tentativa.";
 				feedbackScreen.okCancelMode = false;
 				feedbackScreen.setText(textoFeedback);
+				
+				saveStatus();
 			}
 		}
 		
@@ -232,14 +235,23 @@ package
 			view3d.height = rect.height - barHeight - 5;
 			layerAtividade.addChild(view3d);
 			
-			//var pointLight:PointLight = new PointLight();
-			//pointLight.x = 0;
-			//pointLight.y = 1000;
-			//pointLight.z = -500;
-			//pointLight.color = 0xFFFF00;
-			//view3d.scene.addChild(pointLight);
+			var pointLight:PointLight = new PointLight();
+			pointLight.x = 0;
+			pointLight.y = 500;
+			pointLight.z = -500;
+			pointLight.color = 0xFF0000;
+			pointLight.radius = 400;
+			view3d.scene.addChild(pointLight);
+			
+			var direcionalLight:DirectionalLight = new DirectionalLight(0, 0, 0);
+			direcionalLight.color = 0x00FF40;
+			direcionalLight.ambient = 1;
+			direcionalLight.ambientColor = 0x000000;
+			view3d.scene.addChild(direcionalLight);
 			
 			view3d.addEventListener(MouseEvent.MOUSE_DOWN, down3d);
+			
+			//trace(view3d.camera.x, view3d.camera.y, view3d.camera.z)
 			
 			//Debug.active = true;
 		}
@@ -392,8 +404,8 @@ package
 			connected = false;
 			scorm = new SCORM();
 			
-			pingTimer = new Timer(PING_INTERVAL);
-			pingTimer.addEventListener(TimerEvent.TIMER, pingLMS);
+			//pingTimer = new Timer(PING_INTERVAL);
+			//pingTimer.addEventListener(TimerEvent.TIMER, pingLMS);
 			
 			connected = scorm.connect();
 			
@@ -439,7 +451,7 @@ package
 				if (success)
 				{
 					scorm.save();
-					pingTimer.start();
+					//pingTimer.start();
 				}
 				else
 				{
@@ -512,7 +524,6 @@ package
 			if (ExternalInterface.available) {
 				saveStatusForRecovery();
 				if (connected) {
-					
 					if (scorm.get("cmi.mode" != "normal")) return;
 					scorm.set("cmi.suspend_data", mementoSerialized);
 					commit();
