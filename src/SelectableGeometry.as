@@ -4,6 +4,7 @@ package
 	import away3d.core.base.Geometry;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
+	import away3d.materials.TextureMaterial;
 	import away3d.primitives.CapsuleGeometry;
 	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.CylinderGeometry;
@@ -26,10 +27,10 @@ package
 		private var larguraMax:Number = 200;
 		private var alturaMax:Number = 200;
 		
-		public function SelectableGeometry() 
+		public function SelectableGeometry(lights:Array) 
 		{
 			container = new ObjectContainer3D();
-			modelo = new Modelo3d();
+			modelo = new Modelo3d(lights);
 			container.addChild(modelo.object);
 			
 			addChild(container);
@@ -49,7 +50,7 @@ package
 			
 			switch(geomName) {
 				case "mEsfera":
-					modelo.loadModel("./resources/3dmodels/esfera.3DS");
+					modelo.loadModel("./resources/3dmodels/esfera.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new SphereGeometry(larguraMax / 2);
 					break;
@@ -64,17 +65,17 @@ package
 					geom = new CapsuleGeometry(larguraMax / 2, alturaMax);
 					break;
 				case "mToroide":
-					modelo.loadModel("./resources/3dmodels/torus.3DS");
+					modelo.loadModel("./resources/3dmodels/torus.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new TorusGeometry(larguraMax / 2, 10, 40, 12);
 					break;
 				case "mCilindro":
-					modelo.loadModel("./resources/3dmodels/cilindro.3DS");
+					modelo.loadModel("./resources/3dmodels/cilindro.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, alturaMax);
 					break;
 				case "mCubo":
-					modelo.loadModel("./resources/3dmodels/box.3DS");
+					modelo.loadModel("./resources/3dmodels/box.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new CubeGeometry(larguraMax, alturaMax, alturaMax);
 					break;
@@ -87,7 +88,6 @@ package
 				modelo.object3d = mesh;
 				//modelo.object.scale(1);
 			}
-			Mesh(modelo._object3d).material.alphaPremultiplied = false;
 			//Mesh(modelo._object3d).material.lightPicker
 			//mesh.transform = mat;
 			//container.addChild(mesh);
