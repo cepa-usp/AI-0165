@@ -58,7 +58,7 @@ package
 				var mat:TextureMaterial = TextureMaterial(e.asset);
 				mat.alpha = currentAlpha;
 				mat.lightPicker = new StaticLightPicker(lights);
-				//mat.alphaPremultiplied = true;
+				mat.alphaPremultiplied = false;
 				//mat.bothSides = true;
 				loader3d.removeEventListener(AssetEvent.ASSET_COMPLETE, onResourceComplete);
 			}
@@ -114,6 +114,11 @@ package
 		public function set setScale(value:Number):void
 		{
 			container.scaleX = container.scaleY = container.scaleZ = value;
+		}
+		
+		public function get setScale():Number
+		{
+			return container.scaleX;
 		}
 		
 		public function set setAlpha(value:Number):void

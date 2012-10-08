@@ -24,7 +24,7 @@ package
 		private var geom:Geometry;
 		private var modelo:Modelo3d;
 		
-		private var geoms:Array = ["retaHorizontal", "retaVertical", "plano", "ponto", "espira", "esfera"];
+		private var geoms:Array = ["retaHorizontal", /*"retaVertical", */"plano", "ponto", "espira", "esfera"];
 		private var currentGeom:String = "";
 		
 		private var larguraMax:Number = 600;
@@ -80,7 +80,7 @@ package
 					//mat.appendRotation(90, new Vector3D(0, 0, 1));
 					break;
 				case "retaVertical":
-					geom = new CylinderGeometry(2, 2, 2 * alturaMax);
+					geom = new CylinderGeometry(5, 5, 2 * alturaMax);
 					break;
 				case "plano":
 					modelo.loadModel("./resources/3dmodels/boxestatico.3DS", alpha);
@@ -113,7 +113,7 @@ package
 			//container.addChild(mesh);
 		}
 		
-		public function randomizeGeom():void
+		public function randomizeGeom():String
 		{
 			var auxGeom:String;
 			if (currentGeom != "") {
@@ -127,6 +127,7 @@ package
 			container.rotationY = 0;
 			container.rotationZ = 0;
 			loadGeometry(currentGeom);
+			return currentGeom;
 			//loadGeometry("ponto");
 		}
 		

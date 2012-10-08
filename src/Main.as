@@ -43,6 +43,7 @@ package
 		private var currentAnswer:String = "";
 		
 		private var botaoTerminei:BotaoTerminei;
+		private var botaoShowHide:BotaoTerminei;
 		private var stats:Object;
 		private var valendoNota:Boolean = false;
 		
@@ -117,10 +118,10 @@ package
 		
 		private function loadGeometry():void 
 		{
-			fixedGeom = new FixedGeometry([mainLight]);
+			fixedGeom = new FixedGeometry([mainLight, mainLightDown]);
 			view3d.scene.addChild(fixedGeom);
 			
-			selectableGeom = new SelectableGeometry([mainLight]);
+			selectableGeom = new SelectableGeometry([mainLight, mainLightDown]);
 			view3d.scene.addChild(selectableGeom);
 		}
 		
@@ -144,9 +145,28 @@ package
 			
 			botaoTerminei = new BotaoTerminei();
 			barraModelos.addChild(botaoTerminei);
-			botaoTerminei.x = 420;
-			botaoTerminei.y = botaoTerminei.height / 2 + 5;
+			botaoTerminei.x = 425;
+			botaoTerminei.y = botaoTerminei.height / 2 + 4;
 			botaoTerminei.addEventListener(MouseEvent.CLICK, avalia);
+			
+			botaoShowHide = new BotaoTerminei();
+			barraModelos.addChild(botaoShowHide);
+			botaoShowHide.x = 425;
+			botaoShowHide.y = botaoShowHide.height / 2 + 4;
+			botaoShowHide.visible = false;
+			botaoShowHide.addEventListener(MouseEvent.CLICK, showHideAnswer);
+		}
+		
+		private var show:Boolean = false;
+		private function showHideAnswer(e:MouseEvent):void 
+		{
+			if (show) {
+				show = false;
+				selectableGeom.hideAnswer();
+			}else {
+				show = true;
+				selectableGeom.showAnswer();
+			}
 		}
 		
 		private function lockBarraModelos():void 
@@ -183,7 +203,8 @@ package
 					scoreAux = 100;
 					textoFeedback += "Parabéns, você acertou!";
 				}else {
-					textoFeedback += "Essa não é a melhor forma para medir a Lei de Gauss.";
+					textoFeedback += "Essa não é a melhor forma para medir a Lei de Gauss.\nClique no botão \"Mostrar resposta\" para verificar a frma correta.";
+					botaoShowHide.visible = true;
 				}
 				//score = ((score * scormExercise) + scoreAux) / (scormExercise + 1);
 				
@@ -211,23 +232,28 @@ package
 		private function addFunctionsToButtons(btn:MovieClip):void
 		{
 			btn.buttonMode = true;
+			btn.gotoAndStop(1);
 			btn.addEventListener(MouseEvent.CLICK, btnClick);
 		}
 		
 		private function btnClick(e:MouseEvent):void 
 		{
+			if (currentAnswer == e.target.name) return;
+			
 			if (selectedGeom != null) {
-				selectedGeom.filters = [];
+				//selectedGeom.filters = [];
+				selectedGeom.gotoAndStop(1);
 			}
 			selectableGeom.loadGeometry(e.target.name);
 			currentAnswer = e.target.name;
 			selectedGeom = MovieClip(e.target);
-			selectedGeom.filters = [selectedFilter];
+			//selectedGeom.filters = [selectedFilter];
+			selectedGeom.gotoAndStop(2);
 			//fixedGeom.randomizeGeom();
 		}
 		
 		private var mainLight:PointLight;
-		//private var direcionalLight:DirectionalLight;
+		private var mainLightDown:PointLight;
 		private function setup3d():void
 		{
 			view3d = new View3D(new Scene3D());
@@ -245,18 +271,15 @@ package
 			mainLight.radius = 400;
 			view3d.scene.addChild(mainLight);
 			
-			//direcionalLight = new DirectionalLight(0, 0, 0);
-			//direcionalLight.color = 0x00FF40;
-			//direcionalLight.ambient = 1;
-			//direcionalLight.ambientColor = 0x000000;
-			//view3d.scene.addChild(direcionalLight);
-			
-			//var lightPicker:LightPi
+			mainLightDown = new PointLight();
+			mainLightDown.x = 0;
+			mainLightDown.y = -500;
+			mainLightDown.z = 0;
+			mainLightDown.color = 0xFFFFFF;
+			mainLightDown.radius = 400;
+			view3d.scene.addChild(mainLightDown);
 			
 			view3d.addEventListener(MouseEvent.MOUSE_DOWN, down3d);
-			
-			//trace(view3d.camera.x, view3d.camera.y, view3d.camera.z)
-			
 			//Debug.active = true;
 		}
 		
@@ -293,20 +316,21 @@ package
 			stage.removeEventListener(MouseEvent.MOUSE_UP, up3d);
 		}
 		
-		
-		/* INTERFACE cepa.ai.AIObserver */
-		
 		override public function reset(e:MouseEvent = null):void 
 		{
-			fixedGeom.randomizeGeom();
+			var sel:String = fixedGeom.randomizeGeom();
 			selectableGeom.reset();
+			selectableGeom.loadResposta(sel);
 			if (selectedGeom != null) {
-				selectedGeom.filters = [];
+				//selectedGeom.filters = [];
+				selectedGeom.gotoAndStop(1);
 				selectedGeom = null;
 			}
 			unlock(botaoTerminei);
 			unlockBarraModelos();
 			currentAnswer = "";
+			botaoShowHide.visible = false;
+			show = false;
 		}
 		
 		//---------------- Tutorial -----------------------
