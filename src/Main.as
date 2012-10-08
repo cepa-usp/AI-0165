@@ -43,7 +43,8 @@ package
 		private var currentAnswer:String = "";
 		
 		private var botaoTerminei:BotaoTerminei;
-		private var botaoShowHide:BotaoTerminei;
+		private var botaoShow:BotaoMostrar;
+		private var botaoHide:BotaoEsconder;
 		private var stats:Object;
 		private var valendoNota:Boolean = false;
 		
@@ -149,12 +150,19 @@ package
 			botaoTerminei.y = botaoTerminei.height / 2 + 4;
 			botaoTerminei.addEventListener(MouseEvent.CLICK, avalia);
 			
-			botaoShowHide = new BotaoTerminei();
-			barraModelos.addChild(botaoShowHide);
-			botaoShowHide.x = 425;
-			botaoShowHide.y = botaoShowHide.height / 2 + 4;
-			botaoShowHide.visible = false;
-			botaoShowHide.addEventListener(MouseEvent.CLICK, showHideAnswer);
+			botaoShow = new BotaoMostrar();
+			barraModelos.addChild(botaoShow);
+			botaoShow.x = 425;
+			botaoShow.y = botaoShow.height / 2 + 4;
+			botaoShow.visible = false;
+			botaoShow.addEventListener(MouseEvent.CLICK, showHideAnswer);
+			
+			botaoHide = new BotaoEsconder();
+			barraModelos.addChild(botaoHide);
+			botaoHide.x = 425;
+			botaoHide.y = botaoHide.height / 2 + 4;
+			botaoHide.visible = false;
+			botaoHide.addEventListener(MouseEvent.CLICK, showHideAnswer);
 		}
 		
 		private var show:Boolean = false;
@@ -162,9 +170,13 @@ package
 		{
 			if (show) {
 				show = false;
+				botaoHide.visible = false;
+				botaoShow.visible = true;
 				selectableGeom.hideAnswer();
 			}else {
 				show = true;
+				botaoHide.visible = true;
+				botaoShow.visible = false;
 				selectableGeom.showAnswer();
 			}
 		}
@@ -204,7 +216,7 @@ package
 					textoFeedback += "Parabéns, você acertou!";
 				}else {
 					textoFeedback += "Essa não é a melhor forma para medir a Lei de Gauss.\nClique no botão \"Mostrar resposta\" para verificar a frma correta.";
-					botaoShowHide.visible = true;
+					botaoShow.visible = true;
 				}
 				//score = ((score * scormExercise) + scoreAux) / (scormExercise + 1);
 				
@@ -329,7 +341,8 @@ package
 			unlock(botaoTerminei);
 			unlockBarraModelos();
 			currentAnswer = "";
-			botaoShowHide.visible = false;
+			botaoHide.visible = false;
+			botaoShow.visible = false;
 			show = false;
 		}
 		

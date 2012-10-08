@@ -37,6 +37,7 @@ package
 		
 		public function loadModel(source:String, alpha:Number = 1):void
 		{
+			container.visible = false;
 			currentAlpha = alpha;
 			Parsers.enableAllBundled();
 			loader3d = new Loader3D();
@@ -51,6 +52,7 @@ package
 		//private function onResourceComplete(e:LoaderEvent):void 
 		private function onResourceComplete(e:AssetEvent):void 
 		{
+			container.visible = true;
 			//loader3d.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, onResourceComplete);
 			//loader3d.removeEventListener(AssetEvent.ASSET_COMPLETE, onResourceComplete);
 			loader3d.removeEventListener(LoaderEvent.LOAD_ERROR, onLoadError);

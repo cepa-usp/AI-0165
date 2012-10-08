@@ -40,7 +40,7 @@ package
 			addChild(container);
 			
 			createAnswer();
-			//container.rotationX = -45;
+			container.rotationX = -20;
 		}
 		
 		private function createAnswer():void 
@@ -75,7 +75,7 @@ package
 			switch(geomName) {
 				case "retaHorizontal":
 					modelo.loadModel("./resources/3dmodels/cilindroestatico.3DS", alpha);
-					modelo.setScale = 0.2;
+					modelo.setScale = 0.4;
 					//geom = new CylinderGeometry(2, 2, 2 * larguraMax);
 					//mat.appendRotation(90, new Vector3D(0, 0, 1));
 					break;
@@ -84,20 +84,22 @@ package
 					break;
 				case "plano":
 					modelo.loadModel("./resources/3dmodels/boxestatico.3DS", alpha);
-					modelo.setScale = 0.2;
+					modelo.setScale = 0.3;
 					//geom = new PlaneGeometry(larguraMax, alturaMax, 1, 1, true, true);
 					break;
 				case "ponto":
-					geom = new SphereGeometry(larguraMax / 100);
+					modelo.loadModel("./resources/3dmodels/esferamenorestatica.3DS", alpha);
+					modelo.setScale = 0.15;
+					//geom = new SphereGeometry(larguraMax / 100);
 					break;
 				case "espira":
 					modelo.loadModel("./resources/3dmodels/torusestatico.3DS", alpha);
-					modelo.setScale = 0.2;
+					modelo.setScale = 0.4;
 					//geom = new TorusGeometry(larguraMax / 2, 4, 40, 12);
 					break;
 				case "esfera":
 					modelo.loadModel("./resources/3dmodels/esferamenorestatica.3DS", alpha);
-					modelo.setScale = 0.2;
+					modelo.setScale = 0.7;
 					//geom = new SphereGeometry(larguraMax / 10);
 					break;
 			}
@@ -123,7 +125,7 @@ package
 			}else {
 				currentGeom = geoms.splice(Math.floor(Math.random() * geoms.length), 1);
 			}
-			container.rotationX = 0;
+			container.rotationX = -20;
 			container.rotationY = 0;
 			container.rotationZ = 0;
 			loadGeometry(currentGeom);

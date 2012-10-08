@@ -38,7 +38,7 @@ package
 			container.addChild(modelo.object);
 			
 			addChild(container);
-			//container.rotationX = -45;
+			container.rotationX = -20;
 		}
 		
 		private var modelScale:Number;
@@ -56,33 +56,32 @@ package
 			switch(geomName) {
 				case "mEsfera":
 					modelo.loadModel("./resources/3dmodels/esfera.3DS", alpha);
-					modelScale = 0.2;
+					modelScale = 0.4;
 					//geom = new SphereGeometry(larguraMax / 2);
 					break;
 				case "mPlanoEsferico":
-					//modelo.loadModel("resources/3dmodels/esfera.3DS");
-					//modelo.setScale = 0.2;
-					geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, 2);
-					modelScale = 1;
+					modelo.loadModel("resources/3dmodels/cilindroest.3DS", alpha);
+					modelScale = 0.4;
+					//geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, 2);
 					break;
 				case "mConcha":
 					modelo.loadModel("resources/3dmodels/meia_esfera.3DS", alpha);
-					modelScale = 0.2;
+					modelScale = 0.4;
 					//geom = new CapsuleGeometry(larguraMax / 2, alturaMax);
 					break;
 				case "mToroide":
 					modelo.loadModel("./resources/3dmodels/torus.3DS", alpha);
-					modelScale = 0.2;
+					modelScale = 0.4;
 					//geom = new TorusGeometry(larguraMax / 2, 10, 40, 12);
 					break;
 				case "mCilindro":
 					modelo.loadModel("./resources/3dmodels/cilindro.3DS", alpha);
-					modelScale = 0.2;
+					modelScale = 0.35;
 					//geom = new CylinderGeometry(larguraMax / 2, larguraMax / 2, alturaMax);
 					break;
 				case "mCubo":
 					modelo.loadModel("./resources/3dmodels/box.3DS", alpha);
-					modelScale = 0.2;
+					modelScale = 0.35;
 					//geom = new CubeGeometry(larguraMax, alturaMax, alturaMax);
 					break;
 			}
@@ -107,27 +106,27 @@ package
 			switch(geomName) {
 				case "retaHorizontal":
 					modeloResposta.loadModel("./resources/3dmodels/cilindro.3DS", alpha);
-					answerScale = 0.2;
+					answerScale = 0.35;
 					break;
 				case "retaVertical":
 					modeloResposta.loadModel("./resources/3dmodels/cilindro.3DS", alpha);
-					answerScale = 0.2;
+					answerScale = 0.4;
 					break;
 				case "plano":
 					modeloResposta.loadModel("./resources/3dmodels/box.3DS", alpha);
-					answerScale = 0.2;
+					answerScale = 0.35;
 					break;
 				case "ponto":
 					modeloResposta.loadModel("./resources/3dmodels/esfera.3DS", alpha);
-					answerScale = 0.2;
+					answerScale = 0.4;
 					break;
 				case "espira":
 					modeloResposta.loadModel("./resources/3dmodels/torus.3DS", alpha);
-					answerScale = 0.2;
+					answerScale = 0.4;
 					break;
 				case "esfera":
 					modeloResposta.loadModel("./resources/3dmodels/esfera.3DS", alpha);
-					answerScale = 0.2;
+					answerScale = 0.4;
 					break;
 			}
 			
@@ -159,7 +158,7 @@ package
 		public function reset():void
 		{
 			modelo.reset();
-			container.rotationX = 0;
+			container.rotationX = -20;
 			container.rotationY = 0;
 			container.rotationZ = 0;
 			/*if (mesh != null) {
