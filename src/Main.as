@@ -43,8 +43,8 @@ package
 		private var currentAnswer:String = "";
 		
 		private var botaoTerminei:BotaoTerminei;
-		private var botaoShow:BotaoMostrar;
-		private var botaoHide:BotaoEsconder;
+		//private var botaoShow:BotaoMostrar;
+		//private var botaoHide:BotaoEsconder;
 		private var stats:Object;
 		private var valendoNota:Boolean = false;
 		
@@ -79,6 +79,11 @@ package
 			}else {
 				if (score == 0) iniciaTutorial();
 			}
+		}
+		
+		private function setTitulo(titulo:String):void
+		{
+			barraTitulo.titulo.text = titulo;
 		}
 		
 		private function criaStatisticas():void 
@@ -150,19 +155,41 @@ package
 			botaoTerminei.y = botaoTerminei.height / 2 + 4;
 			botaoTerminei.addEventListener(MouseEvent.CLICK, avalia);
 			
-			botaoShow = new BotaoMostrar();
-			barraModelos.addChild(botaoShow);
-			botaoShow.x = 425;
-			botaoShow.y = botaoShow.height / 2 + 4;
-			botaoShow.visible = false;
-			botaoShow.addEventListener(MouseEvent.CLICK, showHideAnswer);
+			layerAtividade.addChild(botaoShow);
+			//botaoShow = new BotaoMostrar();
+			//barraModelos.addChild(botaoShow);
+			//botaoShow.x = 425;
+			//botaoShow.y = botaoShow.height / 2 + 4;
+			//botaoShow.visible = false;
+			botaoShow.addEventListener(MouseEvent.CLICK, mostraResp);
 			
-			botaoHide = new BotaoEsconder();
-			barraModelos.addChild(botaoHide);
-			botaoHide.x = 425;
-			botaoHide.y = botaoHide.height / 2 + 4;
-			botaoHide.visible = false;
-			botaoHide.addEventListener(MouseEvent.CLICK, showHideAnswer);
+			layerAtividade.addChild(botaoHide);
+			//botaoHide = new BotaoEsconder();
+			//barraModelos.addChild(botaoHide);
+			//botaoHide.x = 425;
+			//botaoHide.y = botaoHide.height / 2 + 4;
+			//botaoHide.visible = false;
+			botaoHide.addEventListener(MouseEvent.CLICK, mostraUser);
+		}
+		
+		private function mostraResp(e:MouseEvent):void 
+		{
+			if (!show) {
+				show = true;
+				botaoHide.filters = [GRAYSCALE_FILTER];
+				botaoShow.filters = [];
+				selectableGeom.showAnswer();
+			}
+		}
+		
+		private function mostraUser(e:MouseEvent):void 
+		{
+			if (show) {
+				show = false;
+				botaoHide.filters = [];
+				botaoShow.filters = [GRAYSCALE_FILTER];
+				selectableGeom.hideAnswer();
+			}
 		}
 		
 		private var show:Boolean = false;
@@ -170,16 +197,21 @@ package
 		{
 			if (show) {
 				show = false;
-				botaoHide.visible = false;
-				botaoShow.visible = true;
+				//botaoHide.visible = false;
+				//botaoShow.visible = true;
+				
 				selectableGeom.hideAnswer();
 			}else {
 				show = true;
-				botaoHide.visible = true;
-				botaoShow.visible = false;
+				//botaoHide.visible = true;
+				//botaoShow.visible = false;
+				botaoHide.filters = [];
+				botaoShow.filters = [GRAYSCALE_FILTER];
 				selectableGeom.showAnswer();
 			}
 		}
+		
+		
 		
 		private function lockBarraModelos():void 
 		{
@@ -216,7 +248,10 @@ package
 					textoFeedback += "Parabéns, você acertou!";
 				}else {
 					textoFeedback += "Essa não é a melhor forma para medir a Lei de Gauss.\nClique no botão \"Mostrar resposta\" para verificar a frma correta.";
+					botaoHide.filters = [];
+					botaoShow.filters = [GRAYSCALE_FILTER];
 					botaoShow.visible = true;
+					botaoHide.visible = true;
 				}
 				//score = ((score * scormExercise) + scoreAux) / (scormExercise + 1);
 				
@@ -272,7 +307,8 @@ package
 			view3d.backgroundColor = 0xFFFFFF;
 			view3d.camera.lens = new PerspectiveLens();
 			view3d.width = rect.width;
-			view3d.height = rect.height - barHeight - 5;
+			view3d.height = rect.height - barHeight - 35;
+			view3d.y = 30;
 			layerAtividade.addChild(view3d);
 			
 			mainLight = new PointLight();
@@ -333,6 +369,7 @@ package
 			var sel:String = fixedGeom.randomizeGeom();
 			selectableGeom.reset();
 			selectableGeom.loadResposta(sel);
+			setTitulo(fixedGeom.enunciado);
 			if (selectedGeom != null) {
 				//selectedGeom.filters = [];
 				selectedGeom.gotoAndStop(1);

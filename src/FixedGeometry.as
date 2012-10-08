@@ -25,6 +25,8 @@ package
 		private var modelo:Modelo3d;
 		
 		private var geoms:Array = ["retaHorizontal", /*"retaVertical", */"plano", "ponto", "espira", "esfera"];
+		private var frases:Dictionary;
+		
 		private var currentGeom:String = "";
 		
 		private var larguraMax:Number = 600;
@@ -53,6 +55,15 @@ package
 			answer["mToroide"] = ["espira"];
 			answer["mCilindro"] = ["retaVertical", "plano"];
 			answer["mCubo"] = ["plano"];
+			
+			frases = new Dictionary();
+			
+			frases["retaHorizontal"] = "Bastão com densidade superficial de cargas.";
+			frases["retaVertical"] = "Bastão com densidade superficial de cargas.";
+			frases["plano"] = "Placa plana com densidade superficial de cargas.";
+			frases["ponto"] = "Carga pontiforme.";
+			frases["espira"] = "Espira com densidade superficial de cargas.";
+			frases["esfera"] = "Esfera com densidade superficial de cargas.";
 		}
 		
 		public function getAnswer(resposta:String):Boolean
@@ -84,7 +95,7 @@ package
 					break;
 				case "plano":
 					modelo.loadModel("./resources/3dmodels/boxestatico.3DS", alpha);
-					modelo.setScale = 0.3;
+					modelo.setScale = 0.4;
 					//geom = new PlaneGeometry(larguraMax, alturaMax, 1, 1, true, true);
 					break;
 				case "ponto":
@@ -131,6 +142,11 @@ package
 			loadGeometry(currentGeom);
 			return currentGeom;
 			//loadGeometry("ponto");
+		}
+		
+		public function get enunciado():String
+		{
+			return frases[currentGeom];
 		}
 		
 		public function setRotationX(value:Number):void
