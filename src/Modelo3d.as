@@ -2,10 +2,14 @@ package
 {
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
+	import away3d.events.AssetEvent;
 	import away3d.events.LoaderEvent;
+	import away3d.library.assets.AssetType;
 	import away3d.loaders.Loader3D;
 	import away3d.loaders.parsers.Max3DSParser;
 	import away3d.loaders.parsers.Parsers;
+	import away3d.materials.lightpickers.StaticLightPicker;
+	import away3d.materials.TextureMaterial;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.net.URLRequest;
@@ -19,32 +23,49 @@ package
 		private var _loadComplete:Boolean = false;
 		public var _object3d:ObjectContainer3D;
 		public var container:ObjectContainer3D;
+		private var currentAlpha:Number = 1;
+		private var lights:Array;
 		
-		public function Modelo3d(source:String = "") 
+		public function Modelo3d(lights:Array, source:String = "", alpha:Number = 1) 
 		{
+			this.lights = lights;
 			container = new ObjectContainer3D();
 			if(source != ""){
-				loadModel(source);
+				loadModel(source, alpha);
 			}
 		}
 		
-		public function loadModel(source:String):void
+		public function loadModel(source:String, alpha:Number = 1):void
 		{
+			currentAlpha = alpha;
 			Parsers.enableAllBundled();
 			loader3d = new Loader3D();
-			loader3d.addEventListener(LoaderEvent.RESOURCE_COMPLETE, onResourceComplete);
+			//loader3d.addEventListener(LoaderEvent.RESOURCE_COMPLETE, onResourceComplete);
 			loader3d.addEventListener(LoaderEvent.LOAD_ERROR, onLoadError);
+			loader3d.addEventListener(AssetEvent.ASSET_COMPLETE, onResourceComplete);
 			
 			var maxParser:Max3DSParser = new Max3DSParser();
 			loader3d.load(new URLRequest(source), null, null, maxParser);
 		}
 		
-		private function onResourceComplete(e:LoaderEvent):void 
+		//private function onResourceComplete(e:LoaderEvent):void 
+		private function onResourceComplete(e:AssetEvent):void 
 		{
-			loader3d.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, onResourceComplete);
+			//loader3d.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, onResourceComplete);
+			//loader3d.removeEventListener(AssetEvent.ASSET_COMPLETE, onResourceComplete);
 			loader3d.removeEventListener(LoaderEvent.LOAD_ERROR, onLoadError);
+			if (e.asset.assetType == AssetType.MATERIAL) {
+				var mat:TextureMaterial = TextureMaterial(e.asset);
+				mat.alpha = currentAlpha;
+				mat.lightPicker = new StaticLightPicker(lights);
+				//mat.alphaPremultiplied = true;
+				//mat.bothSides = true;
+				loader3d.removeEventListener(AssetEvent.ASSET_COMPLETE, onResourceComplete);
+			}
 			_loadComplete = true;
 			object3d = loader3d;
+			//var mesh:Mesh = loader3d;
+			//trace(mesh.material);
 		}
 		
 		private function onLoadError(e:LoaderEvent):void 
@@ -93,6 +114,13 @@ package
 		public function set setScale(value:Number):void
 		{
 			container.scaleX = container.scaleY = container.scaleZ = value;
+		}
+		
+		public function set setAlpha(value:Number):void
+		{
+			currentAlpha = value;
+			//trace(Mesh(_object3d).material);
+			//Mesh(_object3d).material.alpha = value;
 		}
 	}
 

@@ -31,10 +31,10 @@ package
 		private var alturaMax:Number = 600;
 		private var answer:Dictionary;
 		
-		public function FixedGeometry() 
+		public function FixedGeometry(lights:Array) 
 		{
 			container = new ObjectContainer3D();
-			modelo = new Modelo3d();
+			modelo = new Modelo3d(lights);
 			container.addChild(modelo.object);
 			
 			addChild(container);
@@ -74,7 +74,7 @@ package
 			
 			switch(geomName) {
 				case "retaHorizontal":
-					modelo.loadModel("./resources/3dmodels/cilindroestatico.3DS");
+					modelo.loadModel("./resources/3dmodels/cilindroestatico.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new CylinderGeometry(2, 2, 2 * larguraMax);
 					//mat.appendRotation(90, new Vector3D(0, 0, 1));
@@ -83,7 +83,7 @@ package
 					geom = new CylinderGeometry(2, 2, 2 * alturaMax);
 					break;
 				case "plano":
-					modelo.loadModel("./resources/3dmodels/boxestatico.3DS");
+					modelo.loadModel("./resources/3dmodels/boxestatico.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new PlaneGeometry(larguraMax, alturaMax, 1, 1, true, true);
 					break;
@@ -91,12 +91,12 @@ package
 					geom = new SphereGeometry(larguraMax / 100);
 					break;
 				case "espira":
-					modelo.loadModel("./resources/3dmodels/torusestatico.3DS");
+					modelo.loadModel("./resources/3dmodels/torusestatico.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new TorusGeometry(larguraMax / 2, 4, 40, 12);
 					break;
 				case "esfera":
-					modelo.loadModel("./resources/3dmodels/esferamenorestatica.3DS");
+					modelo.loadModel("./resources/3dmodels/esferamenorestatica.3DS", alpha);
 					modelo.setScale = 0.2;
 					//geom = new SphereGeometry(larguraMax / 10);
 					break;

@@ -117,10 +117,10 @@ package
 		
 		private function loadGeometry():void 
 		{
-			fixedGeom = new FixedGeometry();
+			fixedGeom = new FixedGeometry([mainLight]);
 			view3d.scene.addChild(fixedGeom);
 			
-			selectableGeom = new SelectableGeometry();
+			selectableGeom = new SelectableGeometry([mainLight]);
 			view3d.scene.addChild(selectableGeom);
 		}
 		
@@ -144,8 +144,8 @@ package
 			
 			botaoTerminei = new BotaoTerminei();
 			barraModelos.addChild(botaoTerminei);
-			botaoTerminei.x = 560;
-			botaoTerminei.y = botaoTerminei.height / 2 + 10;
+			botaoTerminei.x = 420;
+			botaoTerminei.y = botaoTerminei.height / 2 + 5;
 			botaoTerminei.addEventListener(MouseEvent.CLICK, avalia);
 		}
 		
@@ -226,6 +226,8 @@ package
 			//fixedGeom.randomizeGeom();
 		}
 		
+		private var mainLight:PointLight;
+		//private var direcionalLight:DirectionalLight;
 		private function setup3d():void
 		{
 			view3d = new View3D(new Scene3D());
@@ -235,19 +237,21 @@ package
 			view3d.height = rect.height - barHeight - 5;
 			layerAtividade.addChild(view3d);
 			
-			var pointLight:PointLight = new PointLight();
-			pointLight.x = 0;
-			pointLight.y = 500;
-			pointLight.z = -500;
-			pointLight.color = 0xFF0000;
-			pointLight.radius = 400;
-			view3d.scene.addChild(pointLight);
+			mainLight = new PointLight();
+			mainLight.x = 0;
+			mainLight.y = 500;
+			mainLight.z = -500;
+			mainLight.color = 0xFFFFFF;
+			mainLight.radius = 400;
+			view3d.scene.addChild(mainLight);
 			
-			var direcionalLight:DirectionalLight = new DirectionalLight(0, 0, 0);
-			direcionalLight.color = 0x00FF40;
-			direcionalLight.ambient = 1;
-			direcionalLight.ambientColor = 0x000000;
-			view3d.scene.addChild(direcionalLight);
+			//direcionalLight = new DirectionalLight(0, 0, 0);
+			//direcionalLight.color = 0x00FF40;
+			//direcionalLight.ambient = 1;
+			//direcionalLight.ambientColor = 0x000000;
+			//view3d.scene.addChild(direcionalLight);
+			
+			//var lightPicker:LightPi
 			
 			view3d.addEventListener(MouseEvent.MOUSE_DOWN, down3d);
 			
