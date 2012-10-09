@@ -55,7 +55,8 @@ package BaseAssets.screens
 			//glassPane.scaleX = glassPane.scaleY = 0;
 			Actuate.tween(this, 0.4, { scaleX:0, scaleY:0 } ).onComplete(turnInvisible);
 			if (e != null) {
-				if(e.target == okButton) dispatchEvent(new BaseEvent(BaseEvent.OK_SCREEN, true));
+				if (e.target == okButton) dispatchEvent(new BaseEvent(BaseEvent.OK_SCREEN, true));
+				else dispatchEvent(new BaseEvent(BaseEvent.CANCEL_SCREEN, true));
 			}
 		}
 		
