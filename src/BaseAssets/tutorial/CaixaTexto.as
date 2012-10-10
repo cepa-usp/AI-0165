@@ -223,7 +223,7 @@ package BaseAssets.tutorial
 					}else if (alignForArrow == CENTER) {
 						this.x = x - marginText - texto.textWidth / 2;
 					}else {
-						this.x = x - marginText - texto.textWidth + widthArrow / 2;
+						this.x = x - marginText - texto.width + widthArrow / 2;
 					}
 					break;
 				default:

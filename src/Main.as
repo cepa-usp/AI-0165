@@ -9,6 +9,7 @@ package
 	import BaseAssets.BaseMain;
 	import BaseAssets.events.BaseEvent;
 	import BaseAssets.tutorial.CaixaTexto;
+	import cepa.utils.ToolTip;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -105,6 +106,7 @@ package
 			status.score = score;
 			status.location = scormExercise;
 			status.stats = stats;
+			status.valendo = valendoNota;
 			
 			mementoSerialized = JSON.stringify(status);
 		}
@@ -114,6 +116,11 @@ package
 			var status = JSON.parse(mementoSerialized);
 			stats = status.stats;
 			statsScreen.updateStatics(stats);
+			valendoNota = status.valendo;
+			
+			if (valendoNota) {
+				fazValer(null);
+			}
 			
 			if (!connected) {
 				completed = status.completed;
@@ -142,12 +149,12 @@ package
 			layerAtividade.addChild(barraModelos);
 			barraModelos.y = rect.height - barHeight - 5;
 			
-			addFunctionsToButtons(barraModelos.mCilindro);
-			addFunctionsToButtons(barraModelos.mConcha);
-			addFunctionsToButtons(barraModelos.mCubo);
-			addFunctionsToButtons(barraModelos.mEsfera);
-			addFunctionsToButtons(barraModelos.mPlanoEsferico);
-			addFunctionsToButtons(barraModelos.mToroide);
+			addFunctionsToButtons(barraModelos.mCilindro, "Superfície cilíndrica");
+			addFunctionsToButtons(barraModelos.mConcha, "Calota esférica");
+			addFunctionsToButtons(barraModelos.mCubo, "Superfície cúbica");
+			addFunctionsToButtons(barraModelos.mEsfera, "Superfície esférica");
+			addFunctionsToButtons(barraModelos.mPlanoEsferico, "Plano circular");
+			addFunctionsToButtons(barraModelos.mToroide, "Superfície toroidal");
 			
 			botaoTerminei = new BotaoTerminei();
 			barraModelos.addChild(botaoTerminei);
@@ -170,6 +177,31 @@ package
 			//botaoHide.y = botaoHide.height / 2 + 4;
 			//botaoHide.visible = false;
 			botaoHide.addEventListener(MouseEvent.CLICK, mostraUser);
+			
+			layerAtividade.addChild(btValendo);
+			btValendo.addEventListener(MouseEvent.CLICK, perguntaValendoNota);
+		}
+		
+		private function perguntaValendoNota(e:MouseEvent):void 
+		{
+			feedbackScreen.okCancelMode = true;
+			feedbackScreen.setText("A partir de agora o exercício estará valendo nota. Você não poderá voltar ao modo de experimentação.\nDeseja continuar?");
+			feedbackScreen.addEventListener(BaseEvent.OK_SCREEN, fazValer);
+			feedbackScreen.addEventListener(BaseEvent.CANCEL_SCREEN, cancelValendo);
+		}
+		
+		private function cancelValendo(e:BaseEvent):void 
+		{
+			feedbackScreen.removeEventListener(BaseEvent.OK_SCREEN, fazValer);
+			feedbackScreen.removeEventListener(BaseEvent.CANCEL_SCREEN, cancelValendo);
+		}
+		
+		private function fazValer(e:BaseEvent):void 
+		{
+			feedbackScreen.removeEventListener(BaseEvent.OK_SCREEN, fazValer);
+			feedbackScreen.removeEventListener(BaseEvent.CANCEL_SCREEN, cancelValendo);
+			valendoNota = true;
+			lock(btValendo);
 		}
 		
 		private function mostraResp(e:MouseEvent):void 
@@ -243,6 +275,7 @@ package
 				lockBarraModelos();
 				var scoreAux:Number = 0;
 				var textoFeedback:String = "";
+				stats.valendo = valendoNota;
 				if (fixedGeom.getAnswer(currentAnswer)) {
 					scoreAux = 100;
 					textoFeedback += "Parabéns, você acertou!";
@@ -276,11 +309,14 @@ package
 			}
 		}
 		
-		private function addFunctionsToButtons(btn:MovieClip):void
+		private function addFunctionsToButtons(btn:MovieClip, tooltipText:String):void
 		{
 			btn.buttonMode = true;
 			btn.gotoAndStop(1);
 			btn.addEventListener(MouseEvent.CLICK, btnClick);
+			
+			var tt:ToolTip = new ToolTip(btn, tooltipText, 12, 0.8, 150, 0.6, 0.1);
+			stage.addChild(tt);
 		}
 		
 		private function btnClick(e:MouseEvent):void 
@@ -402,34 +438,28 @@ package
 				balao.visible = false;
 				
 				tutoSequence = ["Veja aqui as orientações.",
-								"Clique e arraste sobre uma molécula para criá-la.",
-								"Utilize esses controles para modificar (rotacionar e inverter) as peças.",
-								"Posicione as moléculas para montar um segmento de DNA.",
-								"Ao movimentar as moléculas serão formadas as ligações (covalente ou ponte de hidrogênio)...",
-								"...de acordo com a proximidade entre os elementos que formam a ligação.",
-								"Para apagar uma molécula basta arrastá-la para a barra inferior ou pressionar \"delete\" quando ela estiver selecionada.",
-								"Clique sobre uma ligação para classificá-la (ligação covalente ou ponte de hidrogênio).",
-								"Pressione \"terminei\" para avaliar sua resposta."];
+								"Este é um material eletrizado, isto é, com cargas elética não nula, escolhido aleatoriamente.",
+								"Aqui está descrita a geometria e a distribuição de carga nesse material.",
+								"Escolha a superfície mais apropriada para calcular o campo elétrico através da lei de Gauss.",
+								"Pressione \"terminei\" para verificar sua resposta.",
+								"Pressione este botão para começar um novo exercício.",
+								"Veja o seu desempenho aqui."];
 				
-				pointsTuto = 	[new Point(650, 405),
-								new Point(240 , 500),
-								new Point(460 , 500),
-								new Point(180 , 180),
-								new Point(200 , 200),
-								new Point(220 , 220),
-								new Point(240 , 240),
-								new Point(180 , 260),
-								new Point(220 , 260)];
+				pointsTuto = 	[new Point(585, 450),
+								new Point(350 , 200),
+								new Point(350 , 25),
+								new Point(185 , 450),
+								new Point(420 , 450),
+								new Point(542 , 450),
+								new Point(665 , 450)];
 								
-				tutoBaloonPos = [[CaixaTexto.RIGHT, CaixaTexto.FIRST],
+				tutoBaloonPos = [[CaixaTexto.BOTTON, CaixaTexto.LAST],
+								[CaixaTexto.BOTTON, CaixaTexto.CENTER],
+								[CaixaTexto.TOP, CaixaTexto.CENTER],
 								[CaixaTexto.BOTTON, CaixaTexto.FIRST],
+								[CaixaTexto.BOTTON, CaixaTexto.CENTER],
 								[CaixaTexto.BOTTON, CaixaTexto.LAST],
-								["", ""],
-								["", ""],
-								["", ""],
-								["", ""],
-								["", ""],
-								[CaixaTexto.BOTTON, CaixaTexto.FIRST]];
+								[CaixaTexto.BOTTON, CaixaTexto.LAST]];
 			}
 			balao.removeEventListener(BaseEvent.NEXT_BALAO, closeBalao);
 			
@@ -558,6 +588,7 @@ package
 				
 				// Salva no LMS a nota do aluno.
 				var success:Boolean = scorm.set("cmi.score.raw", score.toString());
+				success = scorm.set("cmi.score.scaled", score.toString());
 
 				// Notifica o LMS que esta atividade foi concluída.
 				success = scorm.set("cmi.completion_status", (completed ? "completed" : "incomplete"));
@@ -569,7 +600,7 @@ package
 				//mementoSerialized = marshalObjects();
 				success = scorm.set("cmi.suspend_data", mementoSerialized.toString());
 				
-				if (score > 99) success = scorm.set("cmi.success_status", "passed");
+				if (score > 80) success = scorm.set("cmi.success_status", "passed");
 				else success = scorm.set("cmi.success_status", "failed");
 
 				if (success)

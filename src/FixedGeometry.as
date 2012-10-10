@@ -58,12 +58,12 @@ package
 			
 			frases = new Dictionary();
 			
-			frases["retaHorizontal"] = "Bastão com densidade superficial de cargas.";
-			frases["retaVertical"] = "Bastão com densidade superficial de cargas.";
-			frases["plano"] = "Placa plana com densidade superficial de cargas.";
-			frases["ponto"] = "Carga pontiforme.";
-			frases["espira"] = "Espira com densidade superficial de cargas.";
-			frases["esfera"] = "Esfera com densidade superficial de cargas.";
+			frases["retaHorizontal"] = "Haste INFINITA com densidade linear de carga elétrica lambda.";
+			frases["retaVertical"] = "Haste INFINITA com densidade linear de carga elétrica lambda.";
+			frases["plano"] = "Plano INFINITO com densidade superficial de carga elétrica sigma.";
+			frases["ponto"] = "Carga elétrica pontual q.";
+			frases["espira"] = "Espira com densidade linear de carga lambda.";
+			frases["esfera"] = "Esfera com carga elétrica q.";
 		}
 		
 		public function getAnswer(resposta:String):Boolean
