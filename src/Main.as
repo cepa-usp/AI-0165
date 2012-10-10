@@ -10,6 +10,7 @@ package
 	import BaseAssets.events.BaseEvent;
 	import BaseAssets.tutorial.CaixaTexto;
 	import cepa.utils.ToolTip;
+	import com.eclecticdesignstudio.motion.Actuate;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -44,6 +45,7 @@ package
 		private var currentAnswer:String = "";
 		
 		private var botaoTerminei:BotaoTerminei;
+		private var btValendo:BotaoValendo;
 		//private var botaoShow:BotaoMostrar;
 		//private var botaoHide:BotaoEsconder;
 		private var stats:Object;
@@ -147,6 +149,7 @@ package
 		{
 			barraModelos = new BarraModelos();
 			layerAtividade.addChild(barraModelos);
+			barraModelos.x = 35;
 			barraModelos.y = rect.height - barHeight - 5;
 			
 			addFunctionsToButtons(barraModelos.mCilindro, "Superfície cilíndrica");
@@ -161,6 +164,12 @@ package
 			botaoTerminei.x = 425;
 			botaoTerminei.y = botaoTerminei.height / 2 + 4;
 			botaoTerminei.addEventListener(MouseEvent.CLICK, avalia);
+			
+			btValendo = new BotaoValendo();
+			barraModelos.addChild(btValendo);
+			btValendo.x = 515;
+			btValendo.y = botaoTerminei.y;
+			btValendo.addEventListener(MouseEvent.CLICK, perguntaValendoNota);
 			
 			layerAtividade.addChild(botaoShow);
 			//botaoShow = new BotaoMostrar();
@@ -178,8 +187,8 @@ package
 			//botaoHide.visible = false;
 			botaoHide.addEventListener(MouseEvent.CLICK, mostraUser);
 			
-			layerAtividade.addChild(btValendo);
-			btValendo.addEventListener(MouseEvent.CLICK, perguntaValendoNota);
+			//layerAtividade.addChild(btValendo);
+			
 		}
 		
 		private function perguntaValendoNota(e:MouseEvent):void 
@@ -314,9 +323,26 @@ package
 			btn.buttonMode = true;
 			btn.gotoAndStop(1);
 			btn.addEventListener(MouseEvent.CLICK, btnClick);
+			btn.addEventListener(MouseEvent.MOUSE_OVER, overBtn);
 			
 			var tt:ToolTip = new ToolTip(btn, tooltipText, 12, 0.8, 150, 0.6, 0.1);
 			stage.addChild(tt);
+		}
+		
+		private var tweenScaleTime:Number = 0.2;
+		private var scaleTo:Number = 1.2;
+		private function overBtn(e:MouseEvent):void 
+		{
+			var btn:MovieClip = MovieClip(e.target);
+			btn.addEventListener(MouseEvent.MOUSE_OUT, outBtn);
+			Actuate.tween(btn, tweenScaleTime, { scaleX: scaleTo, scaleY:scaleTo } );
+		}
+		
+		private function outBtn(e:MouseEvent):void 
+		{
+			var btn:MovieClip = MovieClip(e.target);
+			btn.removeEventListener(MouseEvent.MOUSE_OUT, outBtn);
+			Actuate.tween(btn, tweenScaleTime, { scaleX: 1, scaleY:1 } );
 		}
 		
 		private function btnClick(e:MouseEvent):void 
@@ -441,25 +467,28 @@ package
 								"Este é um material eletrizado, isto é, com cargas elética não nula, escolhido aleatoriamente.",
 								"Aqui está descrita a geometria e a distribuição de carga nesse material.",
 								"Escolha a superfície mais apropriada para calcular o campo elétrico através da lei de Gauss.",
-								"Pressione \"terminei\" para verificar sua resposta.",
+								"Pressione \"Terminei\" para verificar sua resposta.",
+								"Pressione \"Valendo nota\" para contabiliar seus resultados.",
 								"Pressione este botão para começar um novo exercício.",
 								"Veja o seu desempenho aqui."];
 				
-				pointsTuto = 	[new Point(585, 450),
+				pointsTuto = 	[new Point(645, 400),
 								new Point(350 , 200),
 								new Point(350 , 25),
-								new Point(185 , 450),
-								new Point(420 , 450),
-								new Point(542 , 450),
-								new Point(665 , 450)];
+								new Point(222 , 450),
+								new Point(458 , 450),
+								new Point(551 , 450),
+								new Point(645 , 435),
+								new Point(645 , 325)];
 								
-				tutoBaloonPos = [[CaixaTexto.BOTTON, CaixaTexto.LAST],
+				tutoBaloonPos = [[CaixaTexto.RIGHT, CaixaTexto.CENTER],
 								[CaixaTexto.BOTTON, CaixaTexto.CENTER],
 								[CaixaTexto.TOP, CaixaTexto.CENTER],
-								[CaixaTexto.BOTTON, CaixaTexto.FIRST],
 								[CaixaTexto.BOTTON, CaixaTexto.CENTER],
 								[CaixaTexto.BOTTON, CaixaTexto.LAST],
-								[CaixaTexto.BOTTON, CaixaTexto.LAST]];
+								[CaixaTexto.BOTTON, CaixaTexto.LAST],
+								[CaixaTexto.RIGHT, CaixaTexto.LAST],
+								[CaixaTexto.RIGHT, CaixaTexto.FIRST]];
 			}
 			balao.removeEventListener(BaseEvent.NEXT_BALAO, closeBalao);
 			
