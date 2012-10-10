@@ -24,7 +24,7 @@ package
 		private var geom:Geometry;
 		private var modelo:Modelo3d;
 		
-		private var geoms:Array = ["retaHorizontal", /*"retaVertical", */"plano", "ponto", "espira", "esfera"];
+		private var geoms:Array = [/*"retaHorizontal",*/ "retaVertical", "plano", "ponto", "espira", "esfera"];
 		private var frases:Dictionary;
 		
 		private var currentGeom:String = "";
@@ -91,7 +91,9 @@ package
 					//mat.appendRotation(90, new Vector3D(0, 0, 1));
 					break;
 				case "retaVertical":
-					geom = new CylinderGeometry(5, 5, 2 * alturaMax);
+					modelo.loadModel("./resources/3dmodels/cilindroestatico.3DS", alpha);
+					modelo.setScale = 0.4;
+					//geom = new CylinderGeometry(5, 5, 2 * alturaMax);
 					break;
 				case "plano":
 					modelo.loadModel("./resources/3dmodels/boxestatico.3DS", alpha);
