@@ -87,6 +87,14 @@ package BaseAssets.screens
 			openScreen();
 		}
 		
+		public function alwaysVisible():void
+		{
+			this.okButton.visible = false;
+			this.cancelButton.visible = false;
+			okCancelMode = false;
+			stage.removeEventListener(KeyboardEvent.KEY_UP, escCloseScreen);
+		}
+		
 	}
 
 }

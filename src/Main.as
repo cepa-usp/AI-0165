@@ -78,7 +78,11 @@ package
 			
 			
 			if (connected) {
-				if (scorm.get("cmi.entry") == "ab-initio") iniciaTutorial();
+				if (scorm.get("cmi.credit") == "no-credit" && valendoNota) {
+					feedbackScreen.alwaysVisible();
+					feedbackScreen.setText("Como você já optou por este exercício valer nota, você não pode mais acessá-lo em modo visitante.\nVolte e acesse novamente esta atividade, mas em modo normal.");
+					return;
+				}else if (scorm.get("cmi.entry") == "ab-initio") iniciaTutorial();
 			}else {
 				if (score == 0) iniciaTutorial();
 			}
@@ -289,8 +293,8 @@ package
 					scoreAux = 100;
 					textoFeedback += "Parabéns, você acertou!";
 				}else {
-					if(selectedGeom.name == "mPlanoEsferico" || selectedGeom.name == "mConcha") textoFeedback += "Essa superfície não é fechada.\nClique no botão \"Mostrar resposta\" para verificar a superfície correta.";
-					else textoFeedback += "Essa não é a melhor superfície para aplicar a Lei de Gauss.\nClique no botão \"Mostrar resposta\" para verificar a superfície correta.";
+					if(selectedGeom.name == "mPlanoEsferico" || selectedGeom.name == "mConcha") textoFeedback += "Esta superfície não é fechada.\nClique no botão \"Mostrar resposta\" para verificar a superfície correta.";
+					else textoFeedback += "Esta não é a melhor superfície para aplicar a Lei de Gauss.\nClique no botão \"Mostrar resposta\" para verificar a superfície correta.";
 					botaoHide.filters = [];
 					botaoShow.filters = [GRAYSCALE_FILTER];
 					botaoShow.visible = true;
@@ -549,7 +553,7 @@ package
 			
 			if (connected) {
 				
-				if (scorm.get("cmi.mode") != "normal") return;
+				//if (scorm.get("cmi.mode") != "normal") return;
 				
 				scorm.set("cmi.exit", "suspend");
 				// Verifica se a AI já foi concluída.
@@ -614,7 +618,7 @@ package
 		{
 			if (connected)
 			{
-				if (scorm.get("cmi.mode") != "normal") return;
+				//if (scorm.get("cmi.mode") != "normal") return;
 				
 				// Salva no LMS a nota do aluno.
 				var success:Boolean = scorm.set("cmi.score.raw", score.toString());
@@ -663,7 +667,7 @@ package
 			if (ExternalInterface.available) {
 				saveStatusForRecovery();
 				if (connected) {
-					if (scorm.get("cmi.mode") != "normal") return;
+					//if (scorm.get("cmi.mode") != "normal") return;
 					scorm.set("cmi.suspend_data", mementoSerialized);
 					commit();
 				}else {//LocalStorage
