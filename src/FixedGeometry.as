@@ -24,7 +24,7 @@ package
 		private var geom:Geometry;
 		private var modelo:Modelo3d;
 		
-		private var geoms:Array = [/*"retaHorizontal",*/ "retaVertical", "plano", "ponto", "espira", "esfera"];
+		private var geoms:Array = [/*"retaHorizontal",*/ "retaVertical", "plano", "ponto", /*"espira",*/ "esfera"];
 		private var frases:Dictionary;
 		
 		private var currentGeom:String = "";
@@ -149,6 +149,11 @@ package
 		public function get enunciado():String
 		{
 			return frases[currentGeom];
+		}
+		
+		public function get currGeom():String 
+		{
+			return currentGeom;
 		}
 		
 		public function setRotationX(value:Number):void

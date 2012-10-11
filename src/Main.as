@@ -187,14 +187,14 @@ package
 			//botaoHide.visible = false;
 			botaoHide.addEventListener(MouseEvent.CLICK, mostraUser);
 			
-			//layerAtividade.addChild(btValendo);
+			layerAtividade.addChild(barraTitulo);
 			
 		}
 		
 		private function perguntaValendoNota(e:MouseEvent):void 
 		{
 			feedbackScreen.okCancelMode = true;
-			feedbackScreen.setText("A partir de agora o exercício estará valendo nota. Você não poderá voltar ao modo de experimentação.\nDeseja continuar?");
+			feedbackScreen.setText("A partir de agora o exercício valerá nota. Você não poderá voltar atrás desta decisão.\nConfirma?");
 			feedbackScreen.addEventListener(BaseEvent.OK_SCREEN, fazValer);
 			feedbackScreen.addEventListener(BaseEvent.CANCEL_SCREEN, cancelValendo);
 		}
@@ -289,7 +289,8 @@ package
 					scoreAux = 100;
 					textoFeedback += "Parabéns, você acertou!";
 				}else {
-					textoFeedback += "Essa não é a melhor forma para medir a Lei de Gauss.\nClique no botão \"Mostrar resposta\" para verificar a frma correta.";
+					if(selectedGeom.name == "mPlanoEsferico" || selectedGeom.name == "mConcha") textoFeedback += "Essa superfície não é fechada.\nClique no botão \"Mostrar resposta\" para verificar a superfície correta.";
+					else textoFeedback += "Essa não é a melhor superfície para aplicar a Lei de Gauss.\nClique no botão \"Mostrar resposta\" para verificar a superfície correta.";
 					botaoHide.filters = [];
 					botaoShow.filters = [GRAYSCALE_FILTER];
 					botaoShow.visible = true;
@@ -464,7 +465,7 @@ package
 				balao.visible = false;
 				
 				tutoSequence = ["Veja aqui as orientações.",
-								"Este é um material eletrizado, isto é, com cargas elética não nula, escolhido aleatoriamente.",
+								"Este é um material eletrizado, isto é, com carga elética não nula, escolhido aleatoriamente. Clique e arraste o mouse para modificar a visualização dele.",
 								"Aqui está descrita a geometria e a distribuição de carga nesse material.",
 								"Escolha a superfície mais apropriada para calcular o campo elétrico através da lei de Gauss.",
 								"Pressione \"Terminei\" para verificar sua resposta.",
@@ -548,7 +549,7 @@ package
 			
 			if (connected) {
 				
-				if (scorm.get("cmi.mode" != "normal")) return;
+				if (scorm.get("cmi.mode") != "normal") return;
 				
 				scorm.set("cmi.exit", "suspend");
 				// Verifica se a AI já foi concluída.
@@ -613,7 +614,7 @@ package
 		{
 			if (connected)
 			{
-				if (scorm.get("cmi.mode" != "normal")) return;
+				if (scorm.get("cmi.mode") != "normal") return;
 				
 				// Salva no LMS a nota do aluno.
 				var success:Boolean = scorm.set("cmi.score.raw", score.toString());
@@ -662,7 +663,7 @@ package
 			if (ExternalInterface.available) {
 				saveStatusForRecovery();
 				if (connected) {
-					if (scorm.get("cmi.mode" != "normal")) return;
+					if (scorm.get("cmi.mode") != "normal") return;
 					scorm.set("cmi.suspend_data", mementoSerialized);
 					commit();
 				}else {//LocalStorage
